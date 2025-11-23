@@ -1,8 +1,11 @@
-import { PostModel } from "@/app/modules/post/post.model.js";
+import { Post } from "@/app/modules/post/post.model.js";
 import { paginationHelpers } from "@/helpers/pagination-helper.js";
 import type { IPaginationOptions } from "@/interfaces/pagination.js";
 import { User } from "@/app/modules/user/user.model.js";
 import { uploadToImgBB } from "@/helpers/fileUploader.js";
+import { Like } from "@/app/modules/like/like.model.js";
+import { TARGET_TYPE } from "@/app/modules/like/like.interface.js";
+import { Comment } from "@/app/modules/comment/comment.model.js";
 
 const getPosts = async (options: IPaginationOptions) => {
   const { page, limit, skip, sortBy, sortOrder } =
@@ -11,8 +14,8 @@ const getPosts = async (options: IPaginationOptions) => {
   const sort: Record<string, number> = {};
   sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-  const total = await PostModel.countDocuments();
-  const posts = await PostModel.find()
+  const total = await Post.countDocuments();
+  const posts = await Post.find()
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
@@ -40,12 +43,12 @@ const createPost = async (payload: any, user: any) => {
 
   payload.imageUrl = uploadToImgBB(payload.image);
 
-  const created = await PostModel.create({ ...payload, author: authorId });
+  const created = await Post.create({ ...payload, author: authorId });
   return created;
 };
 
 const deletePost = async (id: string, user: any) => {
-  const post = await PostModel.findById(id);
+  const post = await Post.findById(id);
   if (!post) throw new Error("Post not found");
 
   const authorId = post.author?.toString?.();
@@ -55,12 +58,31 @@ const deletePost = async (id: string, user: any) => {
   if (!userId || authorId !== userId.toString())
     throw new Error("You are not authorized to delete this post");
 
-  const deletedPost = await PostModel.findByIdAndDelete(id);
+  const deletedPost = await Post.findByIdAndDelete(id);
   return deletedPost;
+};
+
+const getLikes = async (postId: string) => {
+  const likes = await Like.find({
+    targetId: postId,
+    targetType: TARGET_TYPE.POST,
+  }).populate("likedBy", "firstName lastName email");
+
+  return likes;
+};
+
+const getComments = async (postId: string) => {
+  const comments = await Comment.find({ post: postId })
+    .sort({ createdAt: -1 })
+    .populate("author", "firstName lastName email");
+
+  return comments;
 };
 
 export const PostService = {
   getPosts,
   createPost,
   deletePost,
+  getLikes,
+  getComments,
 };

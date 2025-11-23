@@ -46,8 +46,34 @@ const deletePost = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getLikes = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params["id"] as string;
+  const data = await PostService.getLikes(id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Likes retrieved successfully",
+    data,
+  });
+});
+
+const getComments = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params["id"] as string;
+  const data = await PostService.getComments(id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Comments retrieved successfully",
+    data,
+  });
+});
+
 export const PostController = {
   getPosts,
   createPost,
   deletePost,
+  getLikes,
+  getComments,
 };

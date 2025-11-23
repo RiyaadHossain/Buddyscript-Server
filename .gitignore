@@ -48,3 +48,9 @@ pids
 # TypeScript cache
 *.tsbuildinfo
 .vercel
+
+# Ignore uploaded images
+uploads/
+
+# Ignore Todo file
+ToDo.txt

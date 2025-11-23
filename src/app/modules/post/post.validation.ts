@@ -8,13 +8,20 @@ const createPostSchema = z.object({
 });
 
 
-const deletePostSchema = z.object({
+const getByIdSchema = z.object({
   params: z.object({
     id: z.string().nonempty({ message: "Post id is required" }),
   }),
 });
 
+const deletePostSchema = getByIdSchema;
+
+const getCommentsSchema = getByIdSchema;
+const getLikesSchema = getByIdSchema;
+
 export const PostValidation = {
   createPostSchema,
   deletePostSchema,
+  getCommentsSchema,
+  getLikesSchema,
 };

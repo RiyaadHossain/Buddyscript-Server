@@ -9,6 +9,20 @@ const router = Router();
 
 router.get("/", auth(), PostController.getPosts);
 
+router.get(
+  "/:id/likes",
+  auth(),
+  validateRequest(PostValidation.getLikesSchema),
+  PostController.getLikes
+);
+
+router.get(
+  "/:id/comments",
+  auth(),
+  validateRequest(PostValidation.getCommentsSchema),
+  PostController.getComments
+);
+
 router.post(
   "/",
   auth(),
