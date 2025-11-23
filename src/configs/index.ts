@@ -17,4 +17,5 @@ export default {
   SMTP_PASS: process.env['SMTP_PASS'],
   MAIL_FROM: process.env['MAIL_FROM'],
   CLIENT_URL: process.env['CLIENT_URL'],
+  IMGBB_API_KEY: process.env['IMGBB_API_KEY'],
 };
