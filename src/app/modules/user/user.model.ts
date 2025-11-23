@@ -1,18 +1,16 @@
-import { USER_ROLES } from "@/enums/user.js";
-import type { IUser, UserMethods, UserModel } from "./user.interface.js";
+import type { IUser } from "./user.interface.js";
 import { Schema, model } from "mongoose";
 
 
 // Step 1: Define Schema
-const userSchema = new Schema<IUser, UserModel, UserMethods>(
+const userSchema = new Schema<IUser>(
   {
-    id: {
+    firstName: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
-    name: {
+    lastName: {
       type: String,
       required: true,
       trim: true,
@@ -24,26 +22,25 @@ const userSchema = new Schema<IUser, UserModel, UserMethods>(
       lowercase: true,
       trim: true,
     },
-    username: {
+    password: {
       type: String,
       required: true,
-      unique: true,
-      trim: true,
     },
-    role: {
+    resetPasswordToken: {
       type: String,
-      enum: Object.values(USER_ROLES),
-      default: USER_ROLES.USER,
+      unique: true,
+    },
+    resetPasswordExpires: {
+      type: Date,
     },
   },
   {
-    timestamps: true, // adds createdAt, updatedAt
-    toJSON: { virtuals: true },
+    timestamps: true, 
   }
 );
 
 // Step 2: Create Model
-export const User = model<IUser, UserModel>(
+export const User = model<IUser>(
   "User",
   userSchema
 );

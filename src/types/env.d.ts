@@ -9,5 +9,11 @@ declare namespace NodeJS {
     JWT_EXPIRES_IN?: string;
     REFRESH_TOKEN_SECRET?: string;
     REFRESH_TOKEN_EXPIRES_IN?: string;
+    SMTP_HOST?: string;
+    SMTP_PORT?: string;
+    SMTP_USER?: string;
+    SMTP_PASS?: string;
+    MAIL_FROM?: string;
+    CLIENT_URL?: string;
   }
 }
