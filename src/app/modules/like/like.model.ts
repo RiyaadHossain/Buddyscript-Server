@@ -1,5 +1,6 @@
 import {
   ENUM_REACTION_TYPE,
+  ENUM_TARGET_TYPE,
   type ILike,
 } from "@/app/modules/like/like.interface.js";
 import { model, Schema } from "mongoose";
@@ -10,13 +11,13 @@ const likeSchema = new Schema<ILike>(
     targetId: { type: Schema.Types.ObjectId, required: true },
     targetType: {
       type: String,
-      enum: Object.keys(ENUM_REACTION_TYPE),
+      enum: Object.values(ENUM_TARGET_TYPE),
       required: true,
     },
 
     reaction: {
       type: String,
-      enum: Object.keys(ENUM_REACTION_TYPE),
+      enum: Object.values(ENUM_REACTION_TYPE),
       default: ENUM_REACTION_TYPE.LIKE,
     },
   },

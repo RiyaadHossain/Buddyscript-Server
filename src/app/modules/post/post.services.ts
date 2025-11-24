@@ -4,7 +4,7 @@ import type { IPaginationOptions } from "@/interfaces/pagination.js";
 import { User } from "@/app/modules/user/user.model.js";
 import { uploadToImgBB } from "@/helpers/fileUploader.js";
 import { Like } from "@/app/modules/like/like.model.js";
-import { TARGET_TYPE } from "@/app/modules/like/like.interface.js";
+import { ENUM_TARGET_TYPE } from "@/app/modules/like/like.interface.js";
 import { Comment } from "@/app/modules/comment/comment.model.js";
 import { buildCommentTree } from "@/app/modules/post/post.helper.js";
 
@@ -42,7 +42,7 @@ const createPost = async (payload: any, user: any) => {
 
   if (!authorId) throw new Error("Unable to determine post author");
 
-  payload.imageUrl = uploadToImgBB(payload.image);
+  if (payload.image) payload.imageUrl = await uploadToImgBB(payload.image);
 
   const created = await Post.create({ ...payload, author: authorId });
   return created;
@@ -66,7 +66,7 @@ const deletePost = async (id: string, user: any) => {
 const getLikes = async (postId: string) => {
   const likes = await Like.find({
     targetId: postId,
-    targetType: TARGET_TYPE.POST,
+    targetType: ENUM_TARGET_TYPE.POST,
   }).populate("likedBy", "firstName lastName email");
 
   return likes;
@@ -75,7 +75,8 @@ const getLikes = async (postId: string) => {
 const getComments = async (postId: string) => {
   const comments = await Comment.find({ post: postId })
     .sort({ createdAt: 1 }) // oldest to newest helps tree building
-    .populate("author", "firstName lastName email");
+    .populate("author", "firstName lastName email")
+    .lean();
 
   return buildCommentTree(comments);
 };

@@ -13,8 +13,7 @@ const signup = catchAsync(async (req: Request, res: Response) => {
     message: "Signup successful",
     data,
   };
-  sendResponse(res, responseData)
-
+  sendResponse(res, responseData);
 });
 
 const login = catchAsync(async (req: Request, res: Response) => {
@@ -27,12 +26,11 @@ const login = catchAsync(async (req: Request, res: Response) => {
     message: "Login successful",
     data,
   };
-  sendResponse(res, responseData)
-
+  sendResponse(res, responseData);
 });
 
 const forgetPassword = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.user;
+  const payload = req.body;
   const data = await AuthService.forgetPassword(payload);
 
   const responseData = {
@@ -41,8 +39,7 @@ const forgetPassword = catchAsync(async (req: Request, res: Response) => {
     message: "Check your email for password reset instructions",
     data,
   };
-  sendResponse(res, responseData)
-
+  return sendResponse(res, responseData);
 });
 
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
@@ -54,12 +51,12 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
     message: "Password reset successful",
     data,
   };
-  sendResponse(res, responseData)
+  sendResponse(res, responseData);
 });
 
 export const AuthController = {
   signup,
-  login,  
+  login,
   forgetPassword,
-  resetPassword
+  resetPassword,
 };

@@ -7,7 +7,7 @@ import { singleFileUpload } from "@/helpers/fileUploader.js";
 
 const router = Router();
 
-router.get("/", auth(), PostController.getPosts);
+router.get("/feed", auth(), PostController.getPosts);
 
 router.get(
   "/:id/likes",
@@ -26,7 +26,7 @@ router.get(
 router.post(
   "/",
   auth(),
-  validateRequest(PostValidation.createPostSchema),
+  // validateRequest(PostValidation.createPostSchema),
   singleFileUpload("image"),
   PostController.createPost
 );

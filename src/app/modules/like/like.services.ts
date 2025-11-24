@@ -4,7 +4,7 @@ import { Comment } from "@/app/modules/comment/comment.model.js";
 import { User } from "@/app/modules/user/user.model.js";
 import {
   ENUM_REACTION_TYPE,
-  TARGET_TYPE,
+  ENUM_TARGET_TYPE,
 } from "@/app/modules/like/like.interface.js";
 
 const resolveUserId = async (user: any) => {
@@ -21,7 +21,7 @@ const like = async (payload: any, user: any) => {
   const authorId = await resolveUserId(user);
   if (!authorId) throw new Error("Unable to determine user");
 
-  const targetType = payload.targetType || TARGET_TYPE.POST;
+  const targetType = payload.targetType || ENUM_TARGET_TYPE.POST;
   const reaction = payload.reaction || ENUM_REACTION_TYPE.LIKE;
 
   const existing = await Like.findOne({
@@ -39,7 +39,7 @@ const like = async (payload: any, user: any) => {
     existing.reaction = reaction;
     await existing.save();
 
-    if (targetType === TARGET_TYPE.POST) {
+    if (targetType === ENUM_TARGET_TYPE.POST) {
       await Post.findByIdAndUpdate(payload.targetId, {
         $inc: {
           [`reactions.${oldReaction}`]: -1,
@@ -67,7 +67,7 @@ const like = async (payload: any, user: any) => {
     reaction,
   });
 
-  if (targetType === TARGET_TYPE.POST) {
+  if (targetType === ENUM_TARGET_TYPE.POST) {
     await Post.findByIdAndUpdate(payload.targetId, {
       $inc: { likesCount: 1, [`reactions.${reaction}`]: 1 },
     });
@@ -82,13 +82,13 @@ const like = async (payload: any, user: any) => {
 };
 
 const unlike = async (
-  payload: { targetId: string; targetType?: TARGET_TYPE },
+  payload: { targetId: string; targetType?: ENUM_TARGET_TYPE },
   user: any
 ) => {
   const authorId = await resolveUserId(user);
   if (!authorId) throw new Error("Unable to determine user");
 
-  const targetType = payload.targetType || TARGET_TYPE.POST;
+  const targetType = payload.targetType || ENUM_TARGET_TYPE.POST;
 
   const deleted = await Like.findOneAndDelete({
     likedBy: authorId,
@@ -97,7 +97,7 @@ const unlike = async (
   });
   if (!deleted) return false;
 
-  if (targetType === TARGET_TYPE.POST) {
+  if (targetType === ENUM_TARGET_TYPE.POST) {
     // decrement counts for post
     await Post.findByIdAndUpdate(payload.targetId, {
       $inc: { likesCount: -1, [`reactions.${deleted.reaction}`]: -1 },

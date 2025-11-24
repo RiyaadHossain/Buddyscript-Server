@@ -9,15 +9,15 @@ export enum ENUM_REACTION_TYPE {
   ANGRY = "angry",
 }
 
-export enum TARGET_TYPE {
-  POST = "Post",
-  COMMENT = "Comment",
-  REPLY = "Reply",
+export enum ENUM_TARGET_TYPE {
+  POST = "post",
+  COMMENT = "comment",
+  REPLY = "reply",
 }
 
 export interface ILike {
   likedBy: Types.ObjectId;
   targetId: Types.ObjectId;
-  targetType: TARGET_TYPE;
+  targetType: ENUM_TARGET_TYPE;
   reaction: ENUM_REACTION_TYPE;
 }

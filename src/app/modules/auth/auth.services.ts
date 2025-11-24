@@ -1,6 +1,7 @@
 import type { IUser } from "@/app/modules/user/user.interface.js";
 import { User } from "@/app/modules/user/user.model.js";
 import configs from "@/configs/index.js";
+import APIError from "@/errors/APIError.js";
 import { sendEmail } from "@/helpers/emailSender.js";
 import { jwtHelpers } from "@/helpers/jwt-helper.js";
 import { resetPasswordTemplate } from "@/views/emailTemplates.js";
@@ -10,7 +11,7 @@ import { randomBytes } from "crypto";
 
 const signup = async (payload: IUser) => {
   const userExists = await User.findOne({ email: payload.email });
-  if (userExists) throw new Error("User with this email already exists");
+  if (userExists) throw new APIError("User with this email already exists");
 
   const hashedPassword = await bcrypt.hash(payload.password, 10);
   payload.password = hashedPassword;
@@ -21,10 +22,10 @@ const signup = async (payload: IUser) => {
 
 const login = async (payload: LoginPayload) => {
   const user = await User.findOne({ email: payload.email });
-  if (!user) throw new Error("Invalid email or password");
+  if (!user) throw new APIError("Invalid email or password");
 
   const isPasswordValid = await bcrypt.compare(payload.password, user.password);
-  if (!isPasswordValid) throw new Error("Invalid email or password");
+  if (!isPasswordValid) throw new APIError("Invalid email or password");
 
   const token = jwtHelpers.createToken(
     { email: user.email },
@@ -38,7 +39,7 @@ const login = async (payload: LoginPayload) => {
 const forgetPassword = async (payload: any) => {
   const email = payload.email;
   const user = await User.findOne({ email });
-  if (!user) throw new Error("User with this email does not exist");
+  if (!user) throw new APIError("User with this email does not exist");
 
   const resetToken = randomBytes(32).toString("hex");
   user.resetPasswordToken = resetToken;
@@ -46,21 +47,24 @@ const forgetPassword = async (payload: any) => {
   await user.save();
 
   const resetPasswordUrl = `${configs.CLIENT_URL}?token=${resetToken}`;
-  sendEmail({
+  await sendEmail({
     to: user.email,
-    subject: "Password Reset Request", html: resetPasswordTemplate(resetPasswordUrl)})
+    subject: "Password Reset Request",
+    html: resetPasswordTemplate(resetPasswordUrl),
+  });
 
+  return true;
 };
 
 const resetPassword = async (payload: any) => {
   const { token, newPassword } = payload;
-  
+
   const user = await User.findOne({
     resetPasswordToken: token,
     resetPasswordExpires: { $gt: new Date() },
   });
 
-  if (!user) throw new Error("Invalid or expired password reset token");
+  if (!user) throw new APIError("Invalid or expired password reset token");
 
   const hashedPassword = await bcrypt.hash(newPassword, 10);
   user.password = hashedPassword;

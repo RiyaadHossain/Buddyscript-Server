@@ -3,7 +3,6 @@ import z from "zod/v3";
 const createPostSchema = z.object({
   body: z.object({
     text: z.string().optional(),
-    imageUrl: z.string().url().optional(),
   }),
 });
 

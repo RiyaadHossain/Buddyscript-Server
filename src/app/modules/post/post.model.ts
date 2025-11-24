@@ -11,7 +11,7 @@ const postSchema = new Schema<IPost>(
     imageUrl: { type: String },
     privacy: {
       type: String,
-      enum: Object.keys(ENUM_POST_PRIVACY),
+      enum: Object.values(ENUM_POST_PRIVACY),
       default: ENUM_POST_PRIVACY.PUBLIC,
     },
     likesCount: { type: Number, default: 0 },

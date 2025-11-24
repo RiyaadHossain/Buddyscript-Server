@@ -1,10 +1,11 @@
 import configs from "@/configs/index.js";
+import APIError from "@/errors/APIError.js";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
   host: configs.SMTP_HOST,
   port: Number(configs.SMTP_PORT),
-  secure: true, 
+  secure: false,
   auth: {
     user: configs.SMTP_USER,
     pass: configs.SMTP_PASS,
@@ -30,6 +31,6 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions) {
     return info;
   } catch (err) {
     console.error("Email sending failed:", err);
-    throw new Error("Email could not be sent");
+    throw new APIError("Email could not be sent");
   }
 }

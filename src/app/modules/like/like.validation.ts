@@ -1,7 +1,7 @@
 import z from "zod/v3";
 import {
   ENUM_REACTION_TYPE,
-  TARGET_TYPE,
+  ENUM_TARGET_TYPE,
 } from "@/app/modules/like/like.interface.js";
 
 const likeSchema = z.object({
@@ -10,7 +10,7 @@ const likeSchema = z.object({
     targetType: z
       .string()
       .optional()
-      .refine((v) => !v || Object.values(TARGET_TYPE).includes(v as any), {
+      .refine((v) => !v || Object.values(ENUM_TARGET_TYPE).includes(v as any), {
         message: "Invalid target type",
       }),
     reaction: z
@@ -31,7 +31,7 @@ const unlikeSchema = z.object({
     targetType: z
       .string()
       .optional()
-      .refine((v) => !v || Object.values(TARGET_TYPE).includes(v as any), {
+      .refine((v) => !v || Object.values(ENUM_TARGET_TYPE).includes(v as any), {
         message: "Invalid target type",
       }),
   }),
