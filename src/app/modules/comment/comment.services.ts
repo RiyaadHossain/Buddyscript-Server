@@ -3,6 +3,7 @@ import { User } from "@/app/modules/user/user.model.js";
 import { Post } from "@/app/modules/post/post.model.js";
 import { paginationHelpers } from "@/helpers/pagination-helper.js";
 import type { IPaginationOptions } from "@/interfaces/pagination.js";
+import type { ICommentPayload } from "@/app/modules/comment/comment.interface.js";
 
 const getComments = async (postId: string, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelpers.calculatePagination(options);
@@ -20,11 +21,7 @@ const getComments = async (postId: string, options: IPaginationOptions) => {
   };
 };
 
-const createComment = async (
-  payload: { post: string; text: string },
-  user: any
-) => {
-  // determine author id
+const createComment = async (payload: ICommentPayload, user: any) => {
   let authorId = null;
   if (user?.email) {
     const found = await User.findOne({ email: user.email }).select("_id");
@@ -36,10 +33,22 @@ const createComment = async (
   const post = await Post.findById(payload.post);
   if (!post) throw new Error("Post not found");
 
+  // If it's a reply, ensure parent comment exists
+  let parent = null;
+  if (payload.parentComment) {
+    parent = await Comment.findById(payload.parentComment);
+    if (!parent) throw new Error("Parent comment not found");
+
+    // Increment parent's repliesCount
+    parent.repliesCount += 1;
+    await parent.save();
+  }
+
   const created = await Comment.create({
     author: authorId,
     post: payload.post,
     text: payload.text,
+    parentComment: payload.parentComment || null,
   });
 
   // increment commentsCount and set firstComment if missing
@@ -65,11 +74,18 @@ const deleteComment = async (id: string, user: any) => {
     throw new Error("You are not authorized to delete this comment");
 
   const postId = comment.post as any;
+  await Comment.deleteMany({ parentComment: id }); // delete replies
   const deletedComment = await Comment.findByIdAndDelete(id);
+
+  if (deletedComment?.parentComment)
+    await Comment.findByIdAndUpdate(deletedComment.parentComment, {
+      $inc: { repliesCount: -1 },
+    });
 
   const post = await Post.findById(postId);
   if (post) {
-    post.commentsCount = Math.max(0,post.commentsCount - 1);
+    post.commentsCount = Math.max(0, post.commentsCount - 1);
+
     // if deleted comment was firstComment, set to latest comment or null
     if (post.firstComment && post.firstComment.toString() === id) {
       const latest = await Comment.findOne({ post: postId })

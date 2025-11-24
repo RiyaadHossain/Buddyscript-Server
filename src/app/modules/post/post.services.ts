@@ -6,6 +6,7 @@ import { uploadToImgBB } from "@/helpers/fileUploader.js";
 import { Like } from "@/app/modules/like/like.model.js";
 import { TARGET_TYPE } from "@/app/modules/like/like.interface.js";
 import { Comment } from "@/app/modules/comment/comment.model.js";
+import { buildCommentTree } from "@/app/modules/post/post.helper.js";
 
 const getPosts = async (options: IPaginationOptions) => {
   const { page, limit, skip, sortBy, sortOrder } =
@@ -73,10 +74,10 @@ const getLikes = async (postId: string) => {
 
 const getComments = async (postId: string) => {
   const comments = await Comment.find({ post: postId })
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: 1 }) // oldest to newest helps tree building
     .populate("author", "firstName lastName email");
 
-  return comments;
+  return buildCommentTree(comments);
 };
 
 export const PostService = {
