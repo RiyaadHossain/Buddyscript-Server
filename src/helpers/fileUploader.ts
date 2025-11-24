@@ -4,6 +4,10 @@ import fs from "fs";
 import FormData from "form-data";
 import configs from "@/configs/index.js";
 import axios from "axios";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Make sure upload directory exists
 const uploadDir = path.join(__dirname, "../../uploads");

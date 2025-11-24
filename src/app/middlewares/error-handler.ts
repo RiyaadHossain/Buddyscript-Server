@@ -5,7 +5,6 @@ import httpStatus from "http-status";
 import { MongooseError } from "mongoose";
 import handleZodError from "@/errors/handle-zod-error.js";
 import { handleMongooseError } from "@/errors/handle-mongoose-error.js";
-import { logger } from "@/utils/logger.js";
 
 const errorHandler = (
   err: IAPIError,
@@ -13,7 +12,7 @@ const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  logger.error("❌ Error: ", err);
+  console.log("❌ Error: ", err);
 
   const statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
   let message = err.message || "Internal Server Error";

@@ -1,4 +1,3 @@
-import { logger } from "@/utils/logger.js";
 
 const statusEmoji = (status: number) => {
   if (status >= 500) return "💥";
@@ -11,7 +10,7 @@ export const morganStream = {
   write: (message: string) => {
     const statusMatch = message.match(/ (\d{3}) /);
     const status = statusMatch ? parseInt(statusMatch[1] as string) : 0;
-    logger.info(`${statusEmoji(status)} ${message.trim()}`);
+    console.log(`${statusEmoji(status)} ${message.trim()}`);
   },
 };
 
