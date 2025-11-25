@@ -2,7 +2,6 @@ import type { IUser } from "./user.interface.js";
 import { Schema, model } from "mongoose";
 
 
-// Step 1: Define Schema
 const userSchema = new Schema<IUser>(
   {
     firstName: {
@@ -28,7 +27,6 @@ const userSchema = new Schema<IUser>(
     },
     resetPasswordToken: {
       type: String,
-      unique: true,
     },
     resetPasswordExpires: {
       type: Date,
@@ -39,7 +37,6 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Step 2: Create Model
 export const User = model<IUser>(
   "User",
   userSchema

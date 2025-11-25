@@ -9,6 +9,8 @@ const router = Router();
 
 router.get("/feed", auth(), PostController.getPosts);
 
+router.get("/reacted/:id/post", auth(), PostController.reacted)
+
 router.get(
   "/:id/likes",
   auth(),
@@ -37,5 +39,6 @@ router.delete(
   validateRequest(PostValidation.deletePostSchema),
   PostController.deletePost
 );
+
 
 export const PostRoutes = router;

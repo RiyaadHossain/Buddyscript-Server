@@ -70,10 +70,24 @@ const getComments = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const reacted = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params["id"] as string;
+  const user = req.user;
+  const data = await PostService.reacted(id, user);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Comments retrieved successfully",
+    data,
+  });
+});
+
 export const PostController = {
   getPosts,
   createPost,
   deletePost,
   getLikes,
   getComments,
+  reacted,
 };

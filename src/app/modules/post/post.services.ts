@@ -21,7 +21,7 @@ const getPosts = async (options: IPaginationOptions) => {
     .skip(skip)
     .limit(limit)
     .populate("author", "firstName lastName email")
-    .populate("firstComment");
+    .populate({ path: "firstComment", populate: { path: "author" } });
 
   return {
     meta: {
@@ -81,10 +81,24 @@ const getComments = async (postId: string) => {
   return buildCommentTree(comments);
 };
 
+const reacted = async (postId: string, user: any) => {
+  const post = await Post.findById(postId);
+  if (!post) throw new Error("Post not found");
+
+  const userId = (await User.findOne({ email: user?.email }).select("_id"))
+    ?._id;
+
+  if (!userId) throw new Error("User not found");
+
+  const liked = await Like.findOne({ targetId: post._id, likedBy: userId });
+  return liked;
+};
+
 export const PostService = {
   getPosts,
   createPost,
   deletePost,
   getLikes,
   getComments,
+  reacted,
 };
