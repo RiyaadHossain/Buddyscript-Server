@@ -9,6 +9,12 @@ import type { LoginPayload } from "@modules/auth/auth.interface.js";
 import bcrypt from "bcrypt";
 import { randomBytes } from "crypto";
 
+const getMe = async (user: any) => {
+  const existingUser = await User.findOne({ email: user.email }).select("-password");
+  if (!existingUser) throw new APIError("User not found", 404);
+  return existingUser;
+};
+
 const signup = async (payload: IUser) => {
   const userExists = await User.findOne({ email: payload.email });
   if (userExists) throw new APIError("User with this email already exists");
@@ -76,6 +82,7 @@ const resetPassword = async (payload: any) => {
 };
 
 export const AuthService = {
+  getMe,
   signup,
   forgetPassword,
   login,

@@ -1,4 +1,5 @@
 import { loginRateLimiter } from "@/app/middlewares/rate-limit.js";
+import auth from "@/app/middlewares/auth.js";
 import validateRequest from "@/app/middlewares/validate-req.js";
 import { AuthController } from "@/app/modules/auth/auth.controllers.js";
 import { AuthValidation } from "@/app/modules/auth/auth.validation.js";
@@ -30,5 +31,7 @@ router.post(
   validateRequest(AuthValidation.resetPasswordSchema),
   AuthController.resetPassword
 );
+
+router.get("/me", auth(), AuthController.getMe);
 
 export const AuthRoutes = router;
