@@ -4,6 +4,8 @@ import { Post } from "@/app/modules/post/post.model.js";
 import { paginationHelpers } from "@/helpers/pagination-helper.js";
 import type { IPaginationOptions } from "@/interfaces/pagination.js";
 import type { ICommentPayload } from "@/app/modules/comment/comment.interface.js";
+import { Like } from "@/app/modules/like/like.model.js";
+import { ENUM_TARGET_TYPE } from "@/app/modules/like/like.interface.js";
 
 const getComments = async (postId: string, options: IPaginationOptions) => {
   const { page, limit, skip } = paginationHelpers.calculatePagination(options);
@@ -99,8 +101,28 @@ const deleteComment = async (id: string, user: any) => {
   return deletedComment;
 };
 
+const react = async (commentId: any, user: any) => {
+  const comment = await Comment.findById(commentId);
+  if (!comment) throw new Error("Comment not found");
+
+  let userId = null;
+  if (user.email) {
+    const found = await User.findOne({ email: user.email }).select("_id");
+    userId = found?._id;
+  }
+
+  const react = await Like.findOne({
+    targetId: comment._id,
+    targetType: ENUM_TARGET_TYPE.COMMENT,
+    likedBy: userId,
+  });
+
+  return react;
+};
+
 export const CommentService = {
   getComments,
   createComment,
   deleteComment,
+  react,
 };
