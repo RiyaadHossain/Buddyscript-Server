@@ -4,6 +4,7 @@ const createCommentSchema = z.object({
   body: z.object({
     post: z.string().nonempty({ message: "Post id is required" }),
     text: z.string().min(1, { message: "Text is required" }),
+    parentComment: z.string().optional(),
   }),
 });
 

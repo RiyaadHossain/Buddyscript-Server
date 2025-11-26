@@ -117,6 +117,8 @@ const react = async (commentId: any, user: any) => {
     likedBy: userId,
   });
 
+  console.log(react);
+
   return react;
 };
 

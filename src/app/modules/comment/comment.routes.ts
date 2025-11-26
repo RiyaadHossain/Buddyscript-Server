@@ -22,6 +22,6 @@ router.delete(
   CommentController.deleteComment
 );
 
-router.get("react/:id/comment", auth(), CommentController.react);
+router.get("/react/:id/comment", auth(), CommentController.react);
 
 export const CommentRoutes = router;

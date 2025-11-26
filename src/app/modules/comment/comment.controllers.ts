@@ -52,13 +52,13 @@ const deleteComment = catchAsync(async (req: Request, res: Response) => {
 const react = catchAsync(async (req: Request, res: Response) => {
   const id = req.params["id"] as string;
   const user = req.user;
-  await CommentService.react(id, user);
+  const result = await CommentService.react(id, user);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "React retrieved successfully",
-    data: null,
+    data: result,
   });
 });
 
